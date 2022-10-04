@@ -15,7 +15,7 @@ export default {
     },
 
     isExpanded() {
-        return this.expander.expanded;
+        return this.expander && this.expander.expanded;
     },
 
     collapse() {
@@ -78,7 +78,7 @@ export default {
         });
 
         eventUtils.handleEnterKeydown(originalEvent, () => {
-            if (this.expander.expanded) {
+            if (this.expander && this.expander.expanded) {
                 const selectedIndex = this.activeDescendant.index;
 
                 if (selectedIndex !== -1) {
@@ -92,7 +92,9 @@ export default {
         });
 
         eventUtils.handleEscapeKeydown(originalEvent, () => {
-            this.expander.expanded = false;
+            if (this.expander) {
+                this.expander.expanded = false;
+            }
         });
     },
 
