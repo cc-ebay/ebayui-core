@@ -26,7 +26,7 @@ export default {
 
     collapse() {
         if (this.expander && this.expander.expanded) {
-        return (this.expander.expanded = false);
+            return (this.expander.expanded = false);
         }
     },
 
@@ -184,17 +184,12 @@ export default {
         this._setupMakeup();
     },
 
-    onRender() {
-        if (typeof window !== 'undefined') {
-            this._cleanupMakeup();
-        }
-    },
-
     onDestroy() {
         this._cleanupMakeup();
     },
 
     _setupMakeup() {
+        this._cleanupMakeup();
         if (this._hasVisibleOptions()) {
             this.activeDescendant = createLinear(
                 this.el,
