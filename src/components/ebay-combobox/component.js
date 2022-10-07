@@ -19,14 +19,14 @@ export default {
     },
 
     expand() {
-        if (this.expander && !this.expander.expanded) {
-            return (this.expander.expanded = true);
+        if (!this.isExpanded()) {
+            this.expander.expanded = true;
         }
     },
 
     collapse() {
-        if (this.expander && this.expander.expanded) {
-            return (this.expander.expanded = false);
+        if (this.isExpanded()) {
+            this.expander.expanded = false;
         }
     },
 
