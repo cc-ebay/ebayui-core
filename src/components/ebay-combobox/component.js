@@ -18,8 +18,16 @@ export default {
         return this.expander && this.expander.expanded;
     },
 
+    expand() {
+        if (this.expander && !this.expander.expanded) {
+            return (this.expander.expanded = true);
+        }
+    },
+
     collapse() {
+        if (this.expander && this.expander.expanded) {
         return (this.expander.expanded = false);
+        }
     },
 
     handleButtonClick(originalEvent) {
@@ -62,8 +70,8 @@ export default {
     },
 
     handleComboboxClick(e) {
-        if (e.target === document.activeElement && this.expander && !this.isExpanded()) {
-            this.expander.expanded = true;
+        if (e.target === document.activeElement) {
+            this.expand();
         }
     },
 
@@ -71,14 +79,14 @@ export default {
         eventUtils.handleUpDownArrowsKeydown(originalEvent, () => {
             originalEvent.preventDefault();
 
-            if (this.expander && !this.expander.expanded) {
+            if (!this.isExpanded()) {
                 this.activeDescendant.reset();
-                this.expander.expanded = true;
+                this.expand();
             }
         });
 
         eventUtils.handleEnterKeydown(originalEvent, () => {
-            if (this.expander && this.expander.expanded) {
+            if (this.isExpanded()) {
                 const selectedIndex = this.activeDescendant.index;
 
                 if (selectedIndex !== -1) {
@@ -86,15 +94,13 @@ export default {
                 }
 
                 if (this.input.expanded !== true) {
-                    this.expander.expanded = false;
+                    this.collapse();
                 }
             }
         });
 
         eventUtils.handleEscapeKeydown(originalEvent, () => {
-            if (this.expander) {
-                this.expander.expanded = false;
-            }
+            this.collapse();
         });
     },
 
@@ -105,9 +111,7 @@ export default {
                 // If we have an expander after the update
                 // that could mean that new content was made visible.
                 // We force the expander open just in case.
-                if (this.expander) {
-                    this.expander.expanded = true;
-                }
+                this.expand();
             });
             this.state.viewAllOptions = false;
 
@@ -123,13 +127,12 @@ export default {
         }
 
         if (
-            this.expander &&
-            this.expander.expanded &&
+            this.isExpanded() &&
             !wasClickedOption &&
             !this.buttonClicked &&
             this.input.expanded !== true
         ) {
-            this.expander.expanded = false;
+            this.collapse();
         }
 
         this.buttonClicked = false;
