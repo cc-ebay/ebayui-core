@@ -5,6 +5,10 @@ import { scroll } from '../../common/element-scroll';
 import * as eventUtils from '../../common/event-utils';
 import safeRegex from '../../common/build-safe-regex';
 
+let cleanupCounter = 0;
+let actualCleanupCounter = 0 ;
+let setupCounter = 0;
+let actualSetupCounter = 0;
 export default {
     focus() {
         this.getEl('combobox').focus();
@@ -177,20 +181,31 @@ export default {
     },
 
     onMount() {
+        console.log('onMount');
         this._setupMakeup();
     },
 
     onUpdate() {
+        console.log('onUpdate');
         this._setupMakeup();
     },
 
+    onRender() {
+        console.log('onRender');
+        if (typeof window !== 'undefined') {
+            this._cleanupMakeup();
+        }
+    },
+
     onDestroy() {
+        console.log('onDestroy');
         this._cleanupMakeup();
     },
 
     _setupMakeup() {
-        this._cleanupMakeup();
+        console.log('_setupMakeup', ++setupCounter);
         if (this._hasVisibleOptions()) {
+            console.log('actualSetupMakeup', ++actualSetupCounter);
             this.activeDescendant = createLinear(
                 this.el,
                 this.getEl('combobox'),
@@ -232,13 +247,18 @@ export default {
                     this.handleFloatingLabelInit();
                 }
             } else {
-                this.subscribeTo(window).once('load', this._setupMakeup.bind(this));
+                this.subscribeTo(window).once('load', () => {
+                    console.log('load event before _setupMakeup');
+                    this._setupMakeup.bind(this)();
+                });
             }
         }
     },
 
     _cleanupMakeup() {
+        console.log('_cleanupMakeup', ++cleanupCounter);
         if (this.activeDescendant) {
+            console.log('actualCleanupMakeup', ++actualCleanupCounter);
             this.activeDescendant.reset();
             this.activeDescendant.destroy();
             this.activeDescendant = null;
@@ -292,3 +312,67 @@ export default {
         });
     },
 };
+
+
+/*
+component.js:184 onMount
+component.js:206 _setupMakeup 1
+component.js:208 actualSetupMakeup 1
+component.js:251 load event before _setupMakeup
+component.js:206 _setupMakeup 2
+component.js:208 actualSetupMakeup 2
+component.js:194 onRender
+component.js:259 _cleanupMakeup 2
+component.js:261 actualCleanupMakeup 1
+component.js:189 onUpdate
+component.js:206 _setupMakeup 3
+component.js:208 actualSetupMakeup 3
+component.js:194 onRender
+component.js:259 _cleanupMakeup 3
+component.js:261 actualCleanupMakeup 2
+component.js:189 onUpdate
+component.js:206 _setupMakeup 4
+component.js:208 actualSetupMakeup 4
+component.js:194 onRender
+component.js:259 _cleanupMakeup 4
+component.js:261 actualCleanupMakeup 3
+component.js:189 onUpdate
+component.js:206 _setupMakeup 5
+component.js:208 actualSetupMakeup 5
+component.js:194 onRender
+component.js:259 _cleanupMakeup 5
+component.js:261 actualCleanupMakeup 4
+component.js:189 onUpdate
+component.js:206 _setupMakeup 6
+component.js:208 actualSetupMakeup 6
+component.js:194 onRender
+component.js:259 _cleanupMakeup 6
+component.js:261 actualCleanupMakeup 5
+component.js:189 onUpdate
+component.js:206 _setupMakeup 7
+component.js:208 actualSetupMakeup 7
+component.js:194 onRender
+component.js:259 _cleanupMakeup 7
+component.js:261 actualCleanupMakeup 6
+component.js:189 onUpdate
+component.js:206 _setupMakeup 8
+component.js:208 actualSetupMakeup 8
+component.js:194 onRender
+component.js:259 _cleanupMakeup 8
+component.js:261 actualCleanupMakeup 7
+component.js:189 onUpdate
+component.js:206 _setupMakeup 9
+component.js:208 actualSetupMakeup 9
+component.js:194 onRender
+component.js:259 _cleanupMakeup 9
+component.js:261 actualCleanupMakeup 8
+component.js:189 onUpdate
+component.js:206 _setupMakeup 10
+component.js:208 actualSetupMakeup 10
+component.js:194 onRender
+component.js:259 _cleanupMakeup 10
+component.js:261 actualCleanupMakeup 9
+component.js:189 onUpdate
+component.js:206 _setupMakeup 11
+component.js:208 actualSetupMakeup 11
+*/
